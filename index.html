@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Excel Calculator via OneDrive (Path)</title>
+  <meta charset="UTF-8" />
+  <title>Excel Calculator (Multiple Inputs)</title>
   <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
   <style>
     body { font-family: Arial; padding: 20px; background: #f0f0f0; }
-    input, button { font-size: 16px; padding: 10px; margin: 5px; }
+    input, button { font-size: 16px; padding: 10px; margin: 5px; width: 80px; }
     pre { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
 
-<h2>📊 Excel Calculator via OneDrive (Path-based)</h2>
+<h2>📊 Excel Multi-Input Calculator</h2>
+<button onclick="signIn()">🔐 Sign In</button><br><br>
 
-<button onclick="signIn()">🔐 Sign In</button>
-<br><br>
+<div>
+  <label>A1: <input type="number" id="a1" /></label>
+  <label>A2: <input type="number" id="a2" /></label>
+  <label>A3: <input type="number" id="a3" /></label>
+</div>
 
-<input type="number" id="a1Input" placeholder="Enter value for A1">
-<button onclick="updateCell()">📝 Update A1</button>
-<button onclick="readCells()">📖 Read A1 & B1</button>
+<br>
+<button onclick="calculate()">🧮 Calculate</button>
 
 <pre id="output">Status:\n</pre>
 
 <script>
   const msalConfig = {
     auth: {
-      clientId: "1140a629-6ea1-41ec-9655-d5e1afab2408", // ✅ Your app's client ID
+      clientId: "1140a629-6ea1-41ec-9655-d5e1afab2408",
       authority: "https://login.microsoftonline.com/common",
       redirectUri: window.location.href
     }
   };
 
   const msalInstance = new msal.PublicClientApplication(msalConfig);
-  const filePath = "calculator.xlsx"; // ✅ file in OneDrive root
-  const sheetName = "Sheet1";         // ✅ must match your worksheet name
+  const filePath = "calculator.xlsx";
+  const sheetName = "Sheet1";
   let accessToken = null;
 
   async function signIn() {
@@ -55,43 +58,45 @@
     }
   }
 
-  async function readCells() {
-    if (!accessToken) return log("⚠️ Sign in first.");
+  async function calculate() {
+    if (!accessToken) return log("⚠️ Please sign in first.");
 
-    const url = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('${sheetName}')/range(address='A1:B1')`;
+    const a1 = document.getElementById("a1").value || 0;
+    const a2 = document.getElementById("a2").value || 0;
+    const a3 = document.getElementById("a3").value || 0;
 
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
+    const values = [[Number(a1)], [Number(a2)], [Number(a3)]];
 
-    const data = await response.json();
-    log(`📖 A1: ${data.values?.[0]?.[0]} | B1: ${data.values?.[0]?.[1]}`);
-  }
+    const writeUrl = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('${sheetName}')/range(address='A1:A3')`;
 
-  async function updateCell() {
-    if (!accessToken) return log("⚠️ Sign in first.");
-
-    const value = document.getElementById("a1Input").value;
-    if (!value) return log("❗ Please enter a number.");
-
-    const url = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('${sheetName}')/range(address='A1')`;
-
-    const response = await fetch(url, {
+    const res = await fetch(writeUrl, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ values: [[Number(value)]] })
+      body: JSON.stringify({ values })
     });
 
-    if (response.ok) {
-      log(`✅ A1 updated to ${value}. Now reading B1...`);
-      await readCells();
+    if (res.ok) {
+      log(`✅ Values written to A1:A3: ${a1}, ${a2}, ${a3}`);
+      await readResults();
     } else {
-      const err = await response.text();
-      log("❌ Update failed:\n" + err);
+      const err = await res.text();
+      log("❌ Write failed:\n" + err);
     }
+  }
+
+  async function readResults() {
+    const readUrl = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('${sheetName}')/range(address='B1:B3')`;
+
+    const res = await fetch(readUrl, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    const data = await res.json();
+    const outputs = data.values?.flat() || [];
+    log(`📥 Results from B1:B3:\n${outputs.map((v, i) => `B${i + 1}: ${v}`).join("\n")}`);
   }
 
   function log(msg) {
