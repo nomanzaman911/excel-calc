@@ -2,104 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Calculator via Excel (OneDrive)</title>
+  <title>Excel Calculator via OneDrive (Path)</title>
   <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
   <style>
-    body { font-family: Arial; padding: 20px; background: #f3f3f3; }
-    button { margin: 10px 5px; padding: 10px 15px; font-size: 16px; }
-    input { padding: 8px; font-size: 16px; width: 100px; }
-    pre { background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+    input, button { font-size: 16px; padding: 10px; margin: 5px; }
+    pre { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
 
-  <h2>📊 Excel Calculator (Powered by OneDrive)</h2>
+<h2>📊 Excel Calculator via OneDrive (Path-based)</h2>
 
-  <button onclick="signIn()">🔐 Sign In</button><br><br>
+<button onclick="signIn()">🔐 Sign In</button>
+<br><br>
 
-  <label>Input (A1): </label>
-  <input type="number" id="a1Input" placeholder="Enter a number">
-  <button onclick="updateCell()">📝 Update A1</button>
-  <button onclick="readCells()">📖 Read A1 & B1</button>
+<input type="number" id="a1Input" placeholder="Enter value for A1">
+<button onclick="updateCell()">📝 Update A1</button>
+<button onclick="readCells()">📖 Read A1 & B1</button>
 
-  <pre id="output">Status:\n</pre>
+<pre id="output">Status:\n</pre>
 
-  <script>
-    const msalConfig = {
-      auth: {
-        clientId: "1140a629-6ea1-41ec-9655-d5e1afab2408", // ✅ Your App Client ID
-        authority: "https://login.microsoftonline.com/common",
-        redirectUri: window.location.href
-      }
-    };
-
-    const fileId = "48d31887-5fad-4d73-a9f5-3c356e68a038"; // ✅ Your Excel file ID
-    const sheetName = "Sheet1";
-    let accessToken = null;
-
-    const msalInstance = new msal.PublicClientApplication(msalConfig);
-
-    async function signIn() {
-      try {
-        const loginResponse = await msalInstance.loginPopup({
-          scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"]
-        });
-        const tokenResponse = await msalInstance.acquireTokenSilent({
-          scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"],
-          account: loginResponse.account
-        });
-        accessToken = tokenResponse.accessToken;
-        log("✅ Signed in as: " + loginResponse.account.username);
-      } catch (error) {
-        log("❌ Sign-in failed: " + error.message);
-      }
+<script>
+  const msalConfig = {
+    auth: {
+      clientId: "1140a629-6ea1-41ec-9655-d5e1afab2408", // ✅ Your app's client ID
+      authority: "https://login.microsoftonline.com/common",
+      redirectUri: window.location.href
     }
+  };
 
-    async function readCells() {
-      if (!accessToken) return log("⚠️ Please sign in first.");
+  const msalInstance = new msal.PublicClientApplication(msalConfig);
+  const filePath = "calculator.xlsx"; // ✅ file in OneDrive root
+  const sheetName = "Sheet1";         // ✅ must match your worksheet name
+  let accessToken = null;
 
-      const url = `https://graph.microsoft.com/v1.0/me/drive/items/${fileId}/workbook/worksheets('${sheetName}')/range(address='A1:B1')`;
-
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${accessToken}` }
+  async function signIn() {
+    try {
+      const loginResponse = await msalInstance.loginPopup({
+        scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"]
       });
 
-      const data = await res.json();
-      log(`📖 A1: ${data.values[0][0]} | B1 (calculated): ${data.values[0][1]}`);
-    }
-
-    async function updateCell() {
-      if (!accessToken) return log("⚠️ Please sign in first.");
-
-      const inputValue = document.getElementById("a1Input").value;
-      if (!inputValue) return log("❗ Please enter a number.");
-
-      const url = `https://graph.microsoft.com/v1.0/me/drive/items/${fileId}/workbook/worksheets('${sheetName}')/range(address='A1')`;
-
-      const res = await fetch(url, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ values: [[Number(inputValue)]] })
+      const tokenResponse = await msalInstance.acquireTokenSilent({
+        scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"],
+        account: loginResponse.account
       });
 
-      if (res.ok) {
-        log(`✅ A1 updated to ${inputValue}. B1 will auto-calculate.`);
-        await readCells(); // Auto-read after update
-      } else {
-        const err = await res.text();
-        log("❌ Update failed:\n" + err);
-      }
+      accessToken = tokenResponse.accessToken;
+      log("✅ Signed in as: " + loginResponse.account.username);
+    } catch (error) {
+      log("❌ Sign-in failed: " + error.message);
     }
+  }
 
-    function log(msg) {
-      const out = document.getElementById("output");
-      out.textContent += msg + "\n";
-      out.scrollTop = out.scrollHeight;
+  async function readCells() {
+    if (!accessToken) return log("⚠️ Sign in first.");
+
+    const url = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('${sheetName}')/range(address='A1:B1')`;
+
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    const data = await response.json();
+    log(`📖 A1: ${data.values?.[0]?.[0]} | B1: ${data.values?.[0]?.[1]}`);
+  }
+
+  async function updateCell() {
+    if (!accessToken) return log("⚠️ Sign in first.");
+
+    const value = document.getElementById("a1Input").value;
+    if (!value) return log("❗ Please enter a number.");
+
+    const url = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('${sheetName}')/range(address='A1')`;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ values: [[Number(value)]] })
+    });
+
+    if (response.ok) {
+      log(`✅ A1 updated to ${value}. Now reading B1...`);
+      await readCells();
+    } else {
+      const err = await response.text();
+      log("❌ Update failed:\n" + err);
     }
-  </script>
+  }
+
+  function log(msg) {
+    const out = document.getElementById("output");
+    out.textContent += msg + "\n";
+    out.scrollTop = out.scrollHeight;
+  }
+</script>
 
 </body>
 </html>
