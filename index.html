@@ -481,7 +481,6 @@
 <p>This panel can contain notes, links, help text, etc.</p>
 </div>
 </div>
-
 <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
 <script>
   const msalConfig = {
@@ -543,12 +542,13 @@
 
     for (const el of outputs) {
       const cell = el.dataset.cell;
+      const id = el.id;
       const res = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('Sheet1')/range(address='${cell}')`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
       const data = await res.json();
-      if (data?.values?.[0]?.[0] !== undefined) {
-        el.textContent = data.values[0][0];
+      if (data?.values?.[0]?.[0] !== undefined && id) {
+        document.getElementById(id).textContent = data.values[0][0];
       }
     }
 
