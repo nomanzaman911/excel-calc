@@ -132,8 +132,8 @@
 <div class="group-box">
 <div class="group-title">Building &amp; Panel Dimensions</div>
 <div class="inline-field">
-<div class="field"><label class="label">Building Width (b) (m)</label><input data-cell="C11" data-tip="Hover to see more information about this field." id="input2" step="0.01" type="number" value="500"/></div>
-<div class="field"><label class="label">Building Depth (d) (m)</label><input data-cell="E11" data-tip="Hover to see more information about this field." id="input3" step="0.01" type="number" value="500"/></div>
+<div class="field"><label class="label">Building Width (b) (m)</label><input data-cell="C11" data-tip="Building dimension perpendicular to wind direction." id="input2" step="0.01" type="number" value="500"/></div>
+<div class="field"><label class="label">Building Depth (d) (m)</label><input data-cell="E11" data-tip="Building dimension parallel to tilt panel direction. For example, if tilt panels are orientated N-S, d will be building dimension parallel to N-S." id="input3" step="0.01" type="number" value="500"/></div>
 </div>
 <label class="label">Roof height (m) and type</label>
 <div class="roof-height-row">
@@ -154,12 +154,12 @@
 <div class="group-title">Roof Details</div>
 <label class="label">Roof Shape</label>
 <select data-cell="A11" data-tip="Select the shape of the roof." id="input9"><option>Flat</option><option>Gable</option><option>Hip</option><option>Mono-slope</option><option>Cantilever</option><option>Open</option></select>
-<label class="label">Roof slope (°)</label><input data-cell="A13" data-tip="Hover to see more information about this field." id="input10" step="1" type="number" value="3"/>
+<label class="label">Roof slope (°)</label><input data-cell="A13" data-tip="If pitch >= 10deg, only four zones are required as distance from roof edge is not applicable anymore." id="input10" step="1" type="number" value="3"/>
 <label class="label">Roof Material Type</label>
 <select data-cell="A12" data-tip="Hover to see more information about this field." id="input11"><option>Steel</option><option>Timber</option><option>Concrete</option></select>
 <label class="label">Max. Purlin/Battens Spacing (mm)</label><input data-cell="A15" data-tip="Hover to see more information about this field." id="input12" step="1" type="number" value="1200"/>
 <label class="label">Parapet Height (mm)</label><input data-cell="A25" data-tip="Hover to see more information about this field." id="input13" step="1" type="number" value="0"/>
-<label class="label">No. of Panels in a Group</label><input data-cell="A28" data-tip="Hover to see more information about this field." id="input14" step="1" type="number" value="1"/>
+<label class="label">No. of Panels in a Group</label><input data-cell="A28" data-tip="Use only 1 panel as tributary area as analysis is being performed per panel" id="input14" step="1" type="number" value="1"/>
 <label class="label">ASCE 7-22 SECTION 29.4.3 - TILT (FLAT, GABLE &amp; HIP ROOFS ONLY WITH PITCH &lt; 7°)</label>
 <select data-cell="L32" data-tip="Hover to see more information about this field." id="input15">
 <option>
@@ -170,7 +170,7 @@
        </option>
 </select>
 <label class="label">Parapet Height (mm) (ASCE 7-22)</label><input data-cell="E37" data-tip="Hover to see more information about this field." id="parapetHeight" step="1" type="number" value="0"/>
-<label class="label">No. of Panels in a Group (ASCE 7-22)</label><input data-cell="A34" data-tip="Hover to see more information about this field." id="panelCount" step="1" type="number" value="1"/>
+<label class="label">No. of Panels in a Group (ASCE 7-22)</label><input data-cell="A34" data-tip="Use only 1 panel as tributary area as analysis is being performed per panel" id="panelCount" step="1" type="number" value="1"/>
 </div>
 <div class="group-box">
 <div class="group-title">
@@ -255,7 +255,7 @@
 <label class="label">
        Shading Distance (mm)
       </label>
-<input data-cell="H15" data-tip="Hover to see more information about this field." id="input21" step="1" type="number" value="0"/>
+<input data-cell="H15" data-tip="If panels are back to back, then full loading should be considered (Enter shading distance = 0)" id="input21" step="1" type="number" value="0"/>
 <label class="label">
        On-purlin solution?
       </label>
@@ -287,7 +287,7 @@
 <select data-cell="C18" data-tip="Hover to see more information about this field." id="designLife"><option>Temp. Works</option><option>5 years</option><option>25 years</option><option>50 years</option><option>100 years or more</option></select>
 <label class="label">Region</label>
 <select data-cell="E18" data-tip="Hover to see more information about this field." id="input25"><option>A0</option><option>A1</option><option>A2</option><option>A3</option></select>
-<label class="label">Ultimate Wind Pressure from Checkwind (kPa)</label><input data-cell="I22" data-tip="Hover to see more information about this field." id="input26" step="0.01" type="number" value="0.6"/>
+<label class="label">Ultimate Wind Pressure from Checkwind (kPa)</label><input data-cell="I22" data-tip=" Use the max. pressure from all sides for flush mount and max. pressure from uplift direction (180) & make sure this pressure is bigger than 1.50 times the other two directions (90 and 270)" id="input26" step="0.01" type="number" value="0.6"/>
 <label class="label">Ground Snow Load Sg (kPa)</label><input data-cell="K18" data-tip="Hover to see more information about this field." id="input27" step="0.01" type="number" value="0"/>
 <label class="label">Terrain Category Range</label>
 <input data-cell="K22" data-tip="Hover to see more information about this field." id="input28" step="0.01" type="number" value="2"/> <label class="label">To</label> <input data-cell="M22" data-tip="Hover to see more information about this field." id="input29" step="0.01" type="number" value="3"/>
