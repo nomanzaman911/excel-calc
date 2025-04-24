@@ -125,7 +125,7 @@
 <div class="container">
 <label class="label">Project Location</label>
 <div class="address-row">
-<input data-cell="A1" id="input1" required="" type="text"/>
+<input data-cell="CELL_1" id="input1" required="" type="text"/>
 <button>Search</button>
 </div>
 <div class="form-grid">
@@ -154,7 +154,7 @@
 <div class="group-title">Roof Details</div>
 <label class="label">Roof Shape</label>
 <select data-cell="A11" id="input9"><option>Flat</option><option>Gable</option><option>Hip</option><option>Mono-slope</option><option>Cantilever</option><option>Open</option></select>
-<label class="label">Roof slope (°)</label><input data-cell="A13" id="input10" step="1" type="number" value="3"/>
+<label class="label">Roof slope (°)</label><input data-cell="A13" id="input10" step="1" type="number" value="3"/><label class="label">Design Life</label><select data-cell="C18" id="designLife"><option>Temp. Works</option><option>5 years</option><option>25 years</option><option>50 years</option><option>100 years or more</option></select>
 <label class="label">Roof Material Type</label>
 <select data-cell="A12" id="input11"><option>Steel</option><option>Timber</option><option>Concrete</option></select>
 <label class="label">Max. Purlin/Battens Spacing (mm)</label><input data-cell="A15" id="input12" step="1" type="number" value="1200"/>
@@ -168,7 +168,7 @@
 <option>
         No
        </option>
-</select>
+</select><label class="label">Parapet Height (mm)</label><input data-cell="E37" id="parapetHeight" step="1" type="number"/><label class="label">No. of Panels in a Group</label><input data-cell="A34" id="panelCount" step="1" type="number"/>
 </div>
 <div class="group-box">
 <div class="group-title">
@@ -195,7 +195,7 @@
 <label class="label">
         Tilt Angle (°)
        </label>
-<input data-cell="AA3" id="input17" step="1" type="number"/>
+<input data-cell="CELL_17" id="input17" step="1" type="number"/>
 </div>
 <label class="label">
        Fasteners
@@ -481,7 +481,6 @@
 <p>This panel can contain notes, links, help text, etc.</p>
 </div>
 </div>
-
 <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
 <script>
   const msalConfig = {
