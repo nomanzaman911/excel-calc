@@ -293,7 +293,7 @@
 <input data-cell="K22" id="input28" step="0.01" type="number" value="2"/> <label class="label">To</label> <input data-cell="M22" id="input29" step="0.01" type="number" value="3"/>
 </div>
 <div class="group-box" style="grid-column: span 4;">
-<div class="group-title">On-Purlin Solution</div>
+<div class="group-title" id="onPurlinTitle">On-Purlin Solution</div>
 <table>
 <thead>
 <tr>
@@ -580,6 +580,7 @@
     }
 
     document.getElementById("loading").style.display = "none";
+    await updateTitleFromExcel("O2", "onPurlinTitle");
     alert("✅ Calculation complete!");
   }
 </script>
@@ -590,4 +591,21 @@
 <div id="loading" style="display:none; font-weight: bold; color: blue; padding: 10px;">
   ⏳ Calculating... Please wait...
 </div>
+
+<script>
+  async function updateTitleFromExcel(cell, elementId) {
+    try {
+      const res = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/roofmount.xlsx:/workbook/worksheets('Sheet1')/range(address='${cell}')`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      const data = await res.json();
+      if (data?.values?.[0]?.[0]) {
+        document.getElementById(elementId).textContent = data.values[0][0];
+      }
+    } catch (err) {
+      console.error("Title update failed:", err);
+    }
+  }
+</script>
+
 </body></html>
