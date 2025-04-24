@@ -496,24 +496,42 @@
   let accessToken = null;
   const msalInstance = new msal.PublicClientApplication(msalConfig);
 
+  async function getAccessToken() {
+    try {
+      const account = msalInstance.getAllAccounts()[0];
+      if (!account) throw new Error("No active session");
+      const response = await msalInstance.acquireTokenSilent({
+        scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"],
+        account
+      });
+      return response.accessToken;
+    } catch (err) {
+      console.warn("Silent token failed, trying popup...", err);
+      const response = await msalInstance.acquireTokenPopup({
+        scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"]
+      });
+      return response.accessToken;
+    }
+  }
+
   async function signIn() {
     try {
       const loginResponse = await msalInstance.loginPopup({
         scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"]
       });
-      const tokenResponse = await msalInstance.acquireTokenSilent({
-        scopes: ["User.Read", "Files.ReadWrite", "Sites.ReadWrite.All"],
-        account: loginResponse.account
-      });
-      accessToken = tokenResponse.accessToken;
+      console.log("✅ Signed in as", loginResponse.account.username);
+      accessToken = await getAccessToken();
       alert("✅ Signed in successfully!");
     } catch (error) {
+      console.error("Sign-in failed:", error);
       alert("❌ Sign-in failed: " + error.message);
     }
   }
 
   async function calculate() {
-    if (!accessToken) {
+    try {
+      accessToken = await getAccessToken();
+    } catch (e) {
       alert("⚠️ Please sign in first.");
       return;
     }
