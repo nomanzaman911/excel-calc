@@ -293,7 +293,7 @@
 <input data-cell="K22" id="input28" step="0.01" type="number" value="2"/> <label class="label">To</label> <input data-cell="M22" id="input29" step="0.01" type="number" value="3"/>
 </div>
 <div class="group-box" style="grid-column: span 4;">
-<div class="group-title"><span class="excel-text" data-cell="O2">Loading...</span></div>
+<div class="group-title">On-Purlin Solution</div>
 <table>
 <thead>
 <tr>
@@ -347,7 +347,7 @@
 </table>
 </div>
 <div class="group-box" style="grid-column: span 4;">
-<div class="group-title"><span class="excel-text" data-cell="O13">Loading...</span></div>
+<div class="group-title">Off-Purlin Solution</div>
 <table>
 <thead>
 <tr>
@@ -396,7 +396,7 @@
 </table>
 </div>
 <div class="group-box" style="grid-column: span 4;">
-<div class="group-title"><span class="excel-text" data-cell="R24">Loading...</span></div>
+<div class="group-title">Corner Zone Dimension 'a'     20000 formula</div>
 <table>
 <thead>
 <tr>
@@ -590,4 +590,21 @@
 <div id="loading" style="display:none; font-weight: bold; color: blue; padding: 10px;">
   ⏳ Calculating... Please wait...
 </div>
-</body></html>
+<script>
+function updateFromExcel(cellAddress, elementId) {
+    Excel.run(async (context) => {
+        const sheet = context.workbook.worksheets.getItem("Sheet1");
+        const range = sheet.getRange(cellAddress);
+        range.load("values");
+        await context.sync();
+        document.getElementById(elementId).innerText = range.values[0][0];
+    }).catch(function (error) {
+        console.error("Error fetching from Excel: " + error);
+        document.getElementById(elementId).innerText = "Error loading";
+    });
+}
+
+updateFromExcel("O2", "onPurlinHeader");
+updateFromExcel("O13", "offPurlinHeader");
+updateFromExcel("R24", "formulaHeader");
+</script></body></html>
