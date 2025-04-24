@@ -125,7 +125,7 @@
 <div class="container">
 <label class="label">Project Location</label>
 <div class="address-row">
-<input data-cell="B1" data-tip="Hover to see more information about this field." id="input1" required="" type="text"/>
+<input data-cell="B1" data-tip="Enter the project location here." id="input1" required="" type="text"/>
 <button>Search</button>
 </div>
 <div class="form-grid">
@@ -153,7 +153,7 @@
 <div class="group-box">
 <div class="group-title">Roof Details</div>
 <label class="label">Roof Shape</label>
-<select data-cell="A11" data-tip="Hover to see more information about this field." id="input9"><option>Flat</option><option>Gable</option><option>Hip</option><option>Mono-slope</option><option>Cantilever</option><option>Open</option></select>
+<select data-cell="A11" data-tip="Select the shape of the roof." id="input9"><option>Flat</option><option>Gable</option><option>Hip</option><option>Mono-slope</option><option>Cantilever</option><option>Open</option></select>
 <label class="label">Roof slope (°)</label><input data-cell="A13" data-tip="Hover to see more information about this field." id="input10" step="1" type="number" value="3"/>
 <label class="label">Roof Material Type</label>
 <select data-cell="A12" data-tip="Hover to see more information about this field." id="input11"><option>Steel</option><option>Timber</option><option>Concrete</option></select>
@@ -531,7 +531,7 @@
     try {
       accessToken = await getAccessToken();
     } catch (e) {
-      alert(⚠️ Please sign in first.");
+      alert("⚠️ Please sign in first.");
       return;
     }
 
@@ -616,41 +616,19 @@ calculate = async function() {
     fetchHeaderFromExcel("R24", "formulaHeader");
 };
 </script>
-
-<!-- Dynamic Building Diagram -->
-<div style="margin: 40px auto; text-align: center;">
-<div style="position: relative; display: inline-block;">
-<img alt="Building Diagram" src="A_simple_2D_digital_line_drawing_illustrates_a_bui.png" width="500"/>
-<div id="labelWidth" style="position: absolute; bottom: 20px; left: 80px; font-weight: bold; color: black;">Width: -- m</div>
-<div id="labelHeight" style="position: absolute; bottom: 100px; left: 320px; font-weight: bold; color: black;">Height: -- m</div>
-<div id="labelRoof" style="position: absolute; top: 80px; right: 20px; font-weight: bold; color: black;">Roof: -- m</div>
-</div>
-</div>
-
 <script>
   const sideInfo = document.querySelector('.side-container p');
+
   document.querySelectorAll('input, select').forEach(el => {
-    if (!el.closest('td')) {
-      el.addEventListener('mouseover', () => {
-        const tip = el.getAttribute('data-tip') || "Hover to see more information about this field.";
+    el.addEventListener('mouseover', () => {
+      const tip = el.getAttribute('data-tip');
+      if (tip) {
         sideInfo.innerText = tip;
-      });
-      el.addEventListener('mouseout', () => {
-        sideInfo.innerText = "This panel can contain notes, links, help text, etc.";
-      });
-    }
-  });
-
-  document.getElementById("input2").addEventListener("input", function () {
-    document.getElementById("labelWidth").innerText = `Width: ${this.value} m`;
-  });
-
-  document.getElementById("input5").addEventListener("input", function () {
-    document.getElementById("labelRoof").innerText = `Roof: ${this.value} m`;
-  });
-
-  document.getElementById("input3").addEventListener("input", function () {
-    document.getElementById("labelHeight").innerText = `Height: ${this.value} m`;
+      }
+    });
+    el.addEventListener('mouseout', () => {
+      sideInfo.innerText = "This panel can contain notes, links, help text, etc.";
+    });
   });
 </script>
 </body></html>
