@@ -293,7 +293,7 @@
 <input data-cell="K22" id="input28" step="0.01" type="number" value="2"/> <label class="label">To</label> <input data-cell="M22" id="input29" step="0.01" type="number" value="3"/>
 </div>
 <div class="group-box" style="grid-column: span 4;">
-<div class="group-title">On-Purlin Solution</div>
+<div class="group-title"><span class="excel-text" data-cell="O2">Loading...</span></div>
 <table>
 <thead>
 <tr>
@@ -347,7 +347,7 @@
 </table>
 </div>
 <div class="group-box" style="grid-column: span 4;">
-<div class="group-title">Off-Purlin Solution</div>
+<div class="group-title"><span class="excel-text" data-cell="O13">Loading...</span></div>
 <table>
 <thead>
 <tr>
@@ -396,7 +396,7 @@
 </table>
 </div>
 <div class="group-box" style="grid-column: span 4;">
-<div class="group-title">Corner Zone Dimension 'a'     20000 formula</div>
+<div class="group-title"><span class="excel-text" data-cell="R24">Loading...</span></div>
 <table>
 <thead>
 <tr>
@@ -590,42 +590,4 @@
 <div id="loading" style="display:none; font-weight: bold; color: blue; padding: 10px;">
   ⏳ Calculating... Please wait...
 </div>
-<div class="output-block">
-<h3>On-Purlin Solution</h3>
-<p id="onPurlinSolution"></p>
-</div>
-<div class="output-block">
-<h3>Off-Purlin Solution</h3>
-<p id="offPurlinSolution"></p>
-</div>
-<div class="output-block">
-<h3>20000 Formula Result</h3>
-<p id="formula20000"></p>
-</div>
-<div id="output-area"><div class="output-field" style="margin-top: 15px;"><h4>On-Purlin Solution</h4><p id="excel-output-O2" style="font-weight: bold;">Loading...</p></div><div class="output-field" style="margin-top: 15px;"><h4>Off-Purlin Solution</h4><p id="excel-output-O13" style="font-weight: bold;">Loading...</p></div><div class="output-field" style="margin-top: 15px;"><h4>20000 Formula Result</h4><p id="excel-output-R24" style="font-weight: bold;">Loading...</p></div></div><script id="excel-update-script">
-async function updateExtraOutputs(workbook) {
-
-    try {
-        const range_O2 = await workbook.worksheets.getItem('Sheet1').getRange('O2').load('values');
-        await workbook.context.sync();
-        document.getElementById("excel-output-O2").textContent = range_O2.values[0][0];
-    } catch (error) {
-        console.warn("Failed to load O2: " + error.message);
-    }
-
-    try {
-        const range_O13 = await workbook.worksheets.getItem('Sheet1').getRange('O13').load('values');
-        await workbook.context.sync();
-        document.getElementById("excel-output-O13").textContent = range_O13.values[0][0];
-    } catch (error) {
-        console.warn("Failed to load O13: " + error.message);
-    }
-
-    try {
-        const range_R24 = await workbook.worksheets.getItem('Sheet1').getRange('R24').load('values');
-        await workbook.context.sync();
-        document.getElementById("excel-output-R24").textContent = range_R24.values[0][0];
-    } catch (error) {
-        console.warn("Failed to load R24: " + error.message);
-    }
-}</script></body></html>
+</body></html>
