@@ -526,14 +526,14 @@
 
     const values = {};
     inputs.forEach(el => {
-      const name = el.dataset.cell;
-      if (name) {
-        values[name] = el.value;
+      const cell = el.dataset.cell;
+      if (cell) {
+        values[cell] = el.value;
       }
     });
 
-    for (const [name, value] of Object.entries(values)) {
-      const url = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/names('${name}')/range`;
+    for (const [cell, value] of Object.entries(values)) {
+      const url = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('Sheet1')/range(address='${cell}')`;
       await fetch(url, {
         method: "PATCH",
         headers: {
@@ -545,21 +545,20 @@
     }
 
     for (const el of outputs) {
-      const name = el.dataset.cell;
-      const id = el.id || "";
+      const cell = el.dataset.cell;
       try {
-        const res = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/names('${name}')/range`, {
+        const res = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('Sheet1')/range(address='${cell}')`, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
         const data = await res.json();
         if (data?.values?.[0]?.[0] !== undefined) {
           el.textContent = data.values[0][0];
-          console.log(`✅ Named Range [${name}] = ${data.values[0][0]}`);
+          console.log(`✅ ${cell} = ${data.values[0][0]}`);
         } else {
-          console.warn(`⚠️ No data returned for Named Range: ${name}`);
+          console.warn(`⚠️ No value returned for ${cell}`);
         }
       } catch (err) {
-        console.error(`❌ Failed to fetch Named Range: ${name}`, err);
+        console.error(`❌ Error reading ${cell}:`, err);
       }
     }
 
