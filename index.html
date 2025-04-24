@@ -481,6 +481,7 @@
 <p>This panel can contain notes, links, help text, etc.</p>
 </div>
 </div>
+
 <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
 <script>
   const msalConfig = {
@@ -517,20 +518,23 @@
       return;
     }
 
-    const inputElements = document.querySelectorAll("[data-cell]");
-    const inputs = Array.from(inputElements).filter(el => el.tagName === "INPUT" || el.tagName === "SELECT");
-    const outputs = Array.from(inputElements).filter(el => el.tagName === "TD");
+    document.getElementById("loading").style.display = "block";
+
+    const allElements = document.querySelectorAll("[data-cell]");
+    const inputs = Array.from(allElements).filter(el => el.tagName === "INPUT" || el.tagName === "SELECT");
+    const outputs = Array.from(document.querySelectorAll("td[data-cell]"));
 
     const values = {};
     inputs.forEach(el => {
-      const cell = el.dataset.cell;
-      if (cell) {
-        values[cell] = el.value;
+      const name = el.dataset.cell;
+      if (name) {
+        values[name] = el.value;
       }
     });
 
-    for (const [cell, value] of Object.entries(values)) {
-      await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('Sheet1')/range(address='${cell}')`, {
+    for (const [name, value] of Object.entries(values)) {
+      const url = `https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/names('${name}')/range`;
+      await fetch(url, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -541,22 +545,33 @@
     }
 
     for (const el of outputs) {
-      const cell = el.dataset.cell;
-      const id = el.id;
-      const res = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/worksheets('Sheet1')/range(address='${cell}')`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      const data = await res.json();
-      if (data?.values?.[0]?.[0] !== undefined && id) {
-        document.getElementById(id).textContent = data.values[0][0];
+      const name = el.dataset.cell;
+      const id = el.id || "";
+      try {
+        const res = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${filePath}:/workbook/names('${name}')/range`, {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const data = await res.json();
+        if (data?.values?.[0]?.[0] !== undefined) {
+          el.textContent = data.values[0][0];
+          console.log(`✅ Named Range [${name}] = ${data.values[0][0]}`);
+        } else {
+          console.warn(`⚠️ No data returned for Named Range: ${name}`);
+        }
+      } catch (err) {
+        console.error(`❌ Failed to fetch Named Range: ${name}`, err);
       }
     }
 
+    document.getElementById("loading").style.display = "none";
     alert("✅ Calculation complete!");
   }
 </script>
 <div style="margin-top: 20px; padding: 10px;">
 <button onclick="signIn()" style="padding: 10px 20px; margin-right: 10px;">🔐 Sign In</button>
 <button onclick="calculate()" style="padding: 10px 20px;">🧮 Calculate</button>
+</div>
+<div id="loading" style="display:none; font-weight: bold; color: blue; padding: 10px;">
+  ⏳ Calculating... Please wait...
 </div>
 </body></html>
