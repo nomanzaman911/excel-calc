@@ -590,7 +590,6 @@
 <div id="loading" style="display:none; font-weight: bold; color: blue; padding: 10px;">
   ⏳ Calculating... Please wait...
 </div>
-
 <div class="output-block">
 <h3>On-Purlin Solution</h3>
 <p id="onPurlinSolution"></p>
@@ -603,4 +602,30 @@
 <h3>20000 Formula Result</h3>
 <p id="formula20000"></p>
 </div>
-</body></html>
+<div id="output-area"><div class="output-field" style="margin-top: 15px;"><h4>On-Purlin Solution</h4><p id="excel-output-O2" style="font-weight: bold;">Loading...</p></div><div class="output-field" style="margin-top: 15px;"><h4>Off-Purlin Solution</h4><p id="excel-output-O13" style="font-weight: bold;">Loading...</p></div><div class="output-field" style="margin-top: 15px;"><h4>20000 Formula Result</h4><p id="excel-output-R24" style="font-weight: bold;">Loading...</p></div></div><script id="excel-update-script">
+async function updateExtraOutputs(workbook) {
+
+    try {
+        const range_O2 = await workbook.worksheets.getItem('Sheet1').getRange('O2').load('values');
+        await workbook.context.sync();
+        document.getElementById("excel-output-O2").textContent = range_O2.values[0][0];
+    } catch (error) {
+        console.warn("Failed to load O2: " + error.message);
+    }
+
+    try {
+        const range_O13 = await workbook.worksheets.getItem('Sheet1').getRange('O13').load('values');
+        await workbook.context.sync();
+        document.getElementById("excel-output-O13").textContent = range_O13.values[0][0];
+    } catch (error) {
+        console.warn("Failed to load O13: " + error.message);
+    }
+
+    try {
+        const range_R24 = await workbook.worksheets.getItem('Sheet1').getRange('R24').load('values');
+        await workbook.context.sync();
+        document.getElementById("excel-output-R24").textContent = range_R24.values[0][0];
+    } catch (error) {
+        console.warn("Failed to load R24: " + error.message);
+    }
+}</script></body></html>
