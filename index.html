@@ -531,7 +531,7 @@
     try {
       accessToken = await getAccessToken();
     } catch (e) {
-      alert("⚠️ Please sign in first.");
+      alert(⚠️ Please sign in first.");
       return;
     }
 
@@ -641,6 +641,16 @@ calculate = async function() {
     }
   });
 
+  document.getElementById("input2").addEventListener("input", function () {
+    document.getElementById("labelWidth").innerText = `Width: ${this.value} m`;
+  });
 
+  document.getElementById("input5").addEventListener("input", function () {
+    document.getElementById("labelRoof").innerText = `Roof: ${this.value} m`;
+  });
+
+  document.getElementById("input3").addEventListener("input", function () {
+    document.getElementById("labelHeight").innerText = `Height: ${this.value} m`;
+  });
 </script>
 </body></html>
